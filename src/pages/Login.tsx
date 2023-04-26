@@ -1,7 +1,17 @@
-import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Stack, TextField, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 
 function Login() {
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
     return (
         <Box className="login-pages">
             <Box className="login-component">
@@ -13,8 +23,30 @@ function Login() {
                         <Typography variant="subtitle1" gutterBottom sx={{ textAlign: "center", mb: "30px" }}>
                             ใช้บัญชีอีเมล์ของคุณ
                         </Typography>
-                        <TextField className='lf-text-field' label="อีเมล์" variant="outlined" />
-                        <TextField className='lf-text-field' label="รหัสผ่าน" variant="outlined" />
+                        <FormControl className='lf-text-field'>
+                            <TextField label="อีเมล์" variant="outlined" />
+                        </FormControl>
+                        <FormControl className='lf-text-field' variant="outlined">
+                            <InputLabel htmlFor="outlined-adornment-password">รหัสผ่าน</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                type={showPassword ? 'text' : 'password'}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                label="Password"
+                            />
+                        </FormControl>
+                        {/* <TextField className='lf-text-field' label="รหัสผ่าน" variant="outlined" /> */}
                         <Stack
                             direction="row"
                             justifyContent="space-between"

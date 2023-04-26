@@ -52,6 +52,16 @@ function Home() {
                         </Table>
                     </TableContainer>
                 </Paper>
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}
+                    sx={{ width: "100%", mt: "15px" }}
+                >
+                    <Box></Box>
+                    <Button variant="contained">ออกจากระบบ</Button>
+                </Stack>
             </Box>
         </Container >
 

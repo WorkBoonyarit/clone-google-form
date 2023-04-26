@@ -4,6 +4,7 @@ import App from './App.tsx'
 import { createSlice, configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import "./assets/styles/app.scss";
+import { BrowserRouter } from 'react-router-dom'
 
 const counterSlice = createSlice({
   name: 'counter',
@@ -30,9 +31,10 @@ const store = configureStore({
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+
+  <BrowserRouter>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>,
+  </BrowserRouter>
 )
