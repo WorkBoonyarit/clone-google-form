@@ -90,7 +90,7 @@ function Login() {
                                 spacing={2}
                                 sx={{ width: "100%", mt: "15px" }}
                             >
-                                <Button variant="text">สร้างบัญชี</Button>
+                                <Box></Box>
                                 <Button variant="contained" type='submit'>เข้าสู่ระบบ</Button>
                             </Stack>
                         </Box>
