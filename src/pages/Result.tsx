@@ -1,43 +1,70 @@
-import { Box, Button, Checkbox, Container, Divider, FormControl, FormControlLabel, FormLabel, Input, InputBase, List, ListItem, ListItemText, ListSubheader, Paper, Radio, RadioGroup, Slider, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Button, Checkbox, Container, Divider, FormControl, FormControlLabel, FormLabel, Input, InputBase, List, ListItem, ListItemText, ListSubheader, Paper, Radio, RadioGroup, Slider, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux';
+import { removeToken } from '../reducer/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function Home() {
 
-
-    function createData(
-        name: string,
-        calories: number,
-        fat: number,
-        carbs: number,
-        protein: number,
-    ) {
-        return { name, calories, fat, carbs, protein };
+    const token = useSelector((state: any) => state.auth.token)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        dispatch(removeToken())
+        navigate("/");
     }
 
-    const rows = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-    ];
+    const [data, setData] = useState([]);
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    const fetchData = async () => {
+        const response = await axios.get("http://localhost:3000/v1/poll", { headers: { "x-api-key": token } })
+        if (response.data && response.data.success) {
+            const { data } = response.data
+            setData(data);
+        }
+    }
+
+    useEffect(() => {
+        if (data.length == 0) {
+            fetchData()
+        }
+    }, data)
     return (
-        <Container maxWidth="lg" sx={{ pt: "15px", pb: "45px" }}>
+        <Container maxWidth="xl" sx={{ pt: "15px", pb: "45px" }}>
             <Box className="home-pages">
                 <Paper className='form-header' variant="outlined" sx={{ p: "32px", borderRadius: 2 }} elevation={0}>
-                    <Typography variant="h5" gutterBottom >
+                    <Typography variant="h5" gutterBottom sx={{ mb: 2 }} >
                         ผลลัพธ์แบบประเมินแผนประกัน
                     </Typography>
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>รายการ</TableCell>
-                                    <TableCell align="right">จำนวน</TableCell>
+                                    <TableCell>ชื่อ นามสกุล</TableCell>
+                                    <TableCell align="right">ประเภทประกันภัย</TableCell>
+                                    <TableCell align="right">แบบ Top-up เติมชั่วโมง</TableCell>
+                                    <TableCell align="right">แบบ Package เหมาจ่าย</TableCell>
+                                    <TableCell align="right">แบบ รายปี</TableCell>
+                                    <TableCell align="right">ซ่อมรถ</TableCell>
+                                    <TableCell align="right">ช่วงทุนประกัน</TableCell>
+                                    <TableCell align="right">ช่วงเบี้ยประกัน</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
+                                {data.length != 0 && data.map((row: any) => (
                                     <TableRow
                                         key={row.name}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -45,12 +72,27 @@ function Home() {
                                         <TableCell component="th" scope="row">
                                             {row.name}
                                         </TableCell>
-                                        <TableCell align="right">{row.calories}</TableCell>
+                                        <TableCell align="right">{row.type_ins}</TableCell>
+                                        <TableCell align="right">{row.type_topup}</TableCell>
+                                        <TableCell align="right">{row.type_fixed}</TableCell>
+                                        <TableCell align="right">{row.type_year}</TableCell>
+                                        <TableCell align="right">{row.type_fix}</TableCell>
+                                        <TableCell align="right">{row.range_sum_insure}</TableCell>
+                                        <TableCell align="right">{row.range_premiums_insure}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                 </Paper>
                 <Stack
                     direction="row"
@@ -60,7 +102,7 @@ function Home() {
                     sx={{ width: "100%", mt: "15px" }}
                 >
                     <Box></Box>
-                    <Button variant="contained">ออกจากระบบ</Button>
+                    <Button variant="contained" onClick={handleLogout}>ออกจากระบบ</Button>
                 </Stack>
             </Box>
         </Container >
