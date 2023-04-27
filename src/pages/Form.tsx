@@ -1,6 +1,6 @@
 import { Box, Button, Checkbox, Container, Divider, FormControl, FormControlLabel, FormLabel, Input, InputBase, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, Slider, Stack, Switch, Typography } from '@mui/material'
 import axios from 'axios';
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 
@@ -39,7 +39,6 @@ function Home() {
         event.preventDefault();
         const response = await axios.post("http://localhost:3000/v1/poll", input, { headers: { "x-api-key": token } })
         if (response.data && response.data.success) {
-            const { data } = response.data
             setSubmit(true);
         }
     }

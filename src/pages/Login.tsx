@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 function Login() {
-
+    const API_URL = "http://localhost:3000/v1/user/login";
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ function Login() {
 
     const onSubmit = async (event: any) => {
         event.preventDefault();
-        const response = await axios.post("http://localhost:3000/v1/user/login", input)
+        const response = await axios.post(API_URL, input)
         if (response.data && response.data.success) {
             const { data } = response.data
             dispatch(setToken(data.token))

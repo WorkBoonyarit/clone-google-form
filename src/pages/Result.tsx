@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Container, Divider, FormControl, FormControlLabel, FormLabel, Input, InputBase, List, ListItem, ListItemText, ListSubheader, Paper, Radio, RadioGroup, Slider, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Box, Button, Container, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux';
 import { removeToken } from '../reducer/authSlice';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function Home() {
-
+    const API_URL = "http://localhost:3000/v1/poll"
     const token = useSelector((state: any) => state.auth.token)
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ function Home() {
     const [data, setData] = useState([]);
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -30,11 +30,15 @@ function Home() {
     };
 
     const fetchData = async () => {
-        const response = await axios.get("http://localhost:3000/v1/poll", { headers: { "x-api-key": token } })
-        if (response.data && response.data.success) {
-            const { data } = response.data
-            setData(data);
-        }
+        await axios.get(API_URL, { headers: { "x-api-key": token } }).then((response: any) => {
+            if (response.data && response.data.success) {
+                const { data } = response.data
+                setData(data);
+            }
+        }).catch((err: any) => {
+            handleLogout();
+            setData([]);
+        });
     }
 
     useEffect(() => {
@@ -64,28 +68,30 @@ function Home() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data.length != 0 && data.map((row: any) => (
-                                    <TableRow
-                                        key={row.name}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">
-                                            {row.name}
-                                        </TableCell>
-                                        <TableCell align="right">{row.type_ins}</TableCell>
-                                        <TableCell align="right">{row.type_topup}</TableCell>
-                                        <TableCell align="right">{row.type_fixed}</TableCell>
-                                        <TableCell align="right">{row.type_year}</TableCell>
-                                        <TableCell align="right">{row.type_fix}</TableCell>
-                                        <TableCell align="right">{row.range_sum_insure}</TableCell>
-                                        <TableCell align="right">{row.range_premiums_insure}</TableCell>
-                                    </TableRow>
-                                ))}
+                                {data.length != 0 && data
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row: any) => (
+                                        <TableRow
+                                            key={row.name}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {row.name}
+                                            </TableCell>
+                                            <TableCell align="right">{row.type_ins}</TableCell>
+                                            <TableCell align="right">{row.type_topup}</TableCell>
+                                            <TableCell align="right">{row.type_fixed}</TableCell>
+                                            <TableCell align="right">{row.type_year}</TableCell>
+                                            <TableCell align="right">{row.type_fix}</TableCell>
+                                            <TableCell align="right">{row.range_sum_insure}</TableCell>
+                                            <TableCell align="right">{row.range_premiums_insure}</TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
                     <TablePagination
-                        rowsPerPageOptions={[10, 25, 100]}
+                        rowsPerPageOptions={[5, 10, 25, 100]}
                         component="div"
                         count={data.length}
                         rowsPerPage={rowsPerPage}
